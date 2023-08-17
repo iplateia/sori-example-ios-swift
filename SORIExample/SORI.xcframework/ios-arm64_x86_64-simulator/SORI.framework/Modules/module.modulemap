@@ -1,0 +1,6 @@
+framework module SORI {
+  umbrella header "SORI.h"
+
+  export *
+  module * { export * }
+}
