@@ -25,6 +25,10 @@ struct ContentView: View {
             }
             .navigationBarTitle("SORI Example")
             .toolbar {
+                Button("Reset") {
+                    SORIManager.shared().clearState()
+                    items.removeAll()
+                }
                 Button(buttonTitle) {
                     if SORIManager.shared().running {
                         stopSORI()
