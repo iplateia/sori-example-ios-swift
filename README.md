@@ -9,8 +9,10 @@ Request your App ID and Secret Key from [SORI Console Site](https://console.sori
 Then, put your App ID and Secret Key in `startSORI` method from `ContentView.swift` file.
 
 ```swift
-SORIManager.shared().applicationID = "App ID"
-SORIManager.shared().secretKey = "Secret Key"
+let configuration = SORIAudioRecognizer.Configuration(
+    applicationID: "Your Application ID",
+    secretKey: "Your Secret Key"
+)
 ```
 
 If you want to debug on a specific device or want to build a release version you need to set your team signing.
