@@ -6,7 +6,11 @@
 	<dict>
 		<key>Headers/SORI.h</key>
 		<data>
-		6Yty2VZw85rXkSzUH09eckphqAI=
+		aDoC74rwcq2coU2B6z7lgXG1sqM=
+		</data>
+		<key>Headers/SORIAudioRecognizer.h</key>
+		<data>
+		zV+2PjnRjza7+UJOiRVPK9yRCJY=
 		</data>
 		<key>Headers/SORIContinuousHitManager.h</key>
 		<data>
@@ -22,7 +26,7 @@
 		</data>
 		<key>Headers/SORIManager.h</key>
 		<data>
-		vv9mIjcaX+iScjPVMlQYoKYjboA=
+		ZbEV58O6iYE79vYqQTy8wASuTOg=
 		</data>
 		<key>Headers/SORINotification.h</key>
 		<data>
@@ -34,11 +38,15 @@
 		</data>
 		<key>Info.plist</key>
 		<data>
-		AKZj9yCAtLVT7r0KRpSRGd9NsX4=
+		5SLs5ua+CRa3XwtRDN5GeH7WeyY=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
 		/miWmbw6qIWF3FlnPN8QK/NX88Q=
+		</data>
+		<key>model.pack</key>
+		<data>
+		XeOGhyyAW3rWZrYiUjsakmHiRKE=
 		</data>
 	</dict>
 	<key>files2</key>
@@ -47,7 +55,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			JY90UQzuduCprGUc2VzgZUN3Cf9fpbBDIkQ4X3QgVVg=
+			AfZ5udWCecMEOVYuYQ0drV3JiwmHsEM+3CCssF+7i0E=
+			</data>
+		</dict>
+		<key>Headers/SORIAudioRecognizer.h</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			COpTJXA/7xwkr2rihPcoPVmJqzWm0f0w7JFcW0PiIQk=
 			</data>
 		</dict>
 		<key>Headers/SORIContinuousHitManager.h</key>
@@ -75,7 +90,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			ISQKjLx8FA4umyFkCu6+ylAXbOkJLKAqO6bMQ4pxiKo=
+			4pF8jZ8j2aBo1ib12vkJ3L8fDA200Opyr64d2OJK04U=
 			</data>
 		</dict>
 		<key>Headers/SORINotification.h</key>
@@ -97,6 +112,13 @@
 			<key>hash2</key>
 			<data>
 			25FKI6MFPU5EuHkuNBNCxlI3sk+7EOg7R3hcRngffYM=
+			</data>
+		</dict>
+		<key>model.pack</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			iaPgsoImE357ilPWseOWxfLajvMEy/mDDqL258ZvLrs=
 			</data>
 		</dict>
 	</dict>

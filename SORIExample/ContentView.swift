@@ -26,11 +26,11 @@ struct ContentView: View {
             .navigationBarTitle("SORI Example")
             .toolbar {
                 Button("Reset") {
-                    SORIManager.shared().clearState()
+                    SORIAudioRecognizer.shared().clearState()
                     items.removeAll()
                 }
                 Button(buttonTitle) {
-                    if SORIManager.shared().running {
+                    if SORIAudioRecognizer.shared().running {
                         stopSORI()
                         buttonTitle = "Start"
                     } else {
@@ -43,10 +43,15 @@ struct ContentView: View {
     }
     
     func startSORI() {
-        SORIManager.shared().applicationID = "Your Application ID"
-        SORIManager.shared().secretKey = "Your Secret Key"
-        SORIManager.shared().prepare(with: .local)  // .local means "In App Recognition"
-        SORIManager.shared().start(withRepeat: true, recognitionHandler: {
+        let recognizer = SORIAudioRecognizer.shared()
+        let configuration = SORIAudioRecognizer.Configuration(
+            applicationID: "Your Application ID",
+            secretKey: "Your Secret Key"
+        )
+        configuration.useLocationService = false
+
+        recognizer.configure(configuration)
+        recognizer.startRecognition(repeat: true, handler: {
             (media, error) in
             if let error = error {
                 print("Error: \(error.localizedDescription)")
@@ -80,7 +85,7 @@ struct ContentView: View {
     }
 
     func stopSORI() {
-        SORIManager.shared().stop()
+        SORIAudioRecognizer.shared().stopRecognition()
     }
 }
 
