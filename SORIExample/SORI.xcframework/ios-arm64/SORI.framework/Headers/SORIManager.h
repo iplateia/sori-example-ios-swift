@@ -10,15 +10,17 @@
 typedef NS_ENUM(int, SORIManagerDetectType) {
     /// This is not used
     SORIManagerDetectTypeInitial = 0,
-    /// Detect using SORI API
-    SORIManagerDetectTypeCloud,
-    /// Detect using local engine (eg. In-app Recognition)
+    /// Legacy cloud recognition path.
+    SORIManagerDetectTypeCloud
+        DEPRECATED_MSG_ATTRIBUTE("Cloud recognition is legacy. Use the default server-managed recognition path."),
+    /// Default server-managed recognition path.
     SORIManagerDetectTypeLocal,
     /// This is not used for 3rd party
     SORIManagerDetectTypeReserved
+        DEPRECATED_MSG_ATTRIBUTE("Live recognition is legacy and not supported for third-party use.")
 };
 
-/// SORI API Version
+/// Legacy SORI API Version
 typedef NS_ENUM(int, SORIAPIVersion) {
     /// SORI API Version 1
     SORIAPIVersionV1 = 1,
@@ -28,12 +30,16 @@ typedef NS_ENUM(int, SORIAPIVersion) {
     SORIAPIVersionV3
 };
 
-/// Detemine Recognition Result Structure
+/// Legacy response payload compatibility selector.
 typedef NS_ENUM(int, SORIManagerResultType) {
-    /// SORI will result with cloud response model structure
-    SORIManagerResultTypeCloudCompatible,
-    /// SORI will result with simplified reponse model structure (like `android_lib`)
+    /// Legacy response model structure.
+    SORIManagerResultTypeCloudCompatible
+        DEPRECATED_MSG_ATTRIBUTE("Campaign response payloads are the default. Avoid configuring resultType in new code."),
+    /// Simplified legacy response model structure.
     SORIManagerResultTypeLocal
+        DEPRECATED_MSG_ATTRIBUTE("Campaign response payloads are the default. Avoid configuring resultType in new code."),
+    /// SORI will result with the campaign response returned by /activity/.
+    SORIManagerResultTypeCampaignResponse
 };
 
 typedef void (^SORIManagerCloudResponseHandler)(NSData *_Nullable data,
@@ -46,6 +52,7 @@ typedef void (^SORIManagerAudioPackLoadCompletionHandler)(BOOL succeed);
 typedef void (^SORIManagerRawBufferHandler)(void *_Nonnull buffer, size_t size);
 typedef void (^SORIManagerClearIDBCompletionHandler)(BOOL succeed);
 typedef void (^SORIManagerMatchIntervalHandler)(NSTimeInterval interval);
+typedef void (^SORIManagerAudiomarkerChangeHandler)(NSString *_Nullable marker);
 
 @class SORIApplicationRequest;
 @class SORIContinuousHitManager;
@@ -63,11 +70,12 @@ typedef void (^SORIManagerMatchIntervalHandler)(NSTimeInterval interval);
 /// SORI API Endpoint
 @property (nonatomic, strong, nonnull) NSString *apiEndpoint;
 
-/// SORI API Version
+/// Legacy SORI API Version
 @property(nonatomic, assign) SORIAPIVersion apiVersion;
 
-/// SORI results model structure type
-@property(nonatomic, assign) SORIManagerResultType resultType;
+/// Legacy response payload compatibility selector. Defaults to SORIManagerResultTypeCampaignResponse.
+@property(nonatomic, assign) SORIManagerResultType resultType
+    DEPRECATED_MSG_ATTRIBUTE("Campaign response payloads are the default. Avoid configuring resultType in new code.");
 
 /// If YES, SORI prepared successfully.
 @property(nonatomic, readonly) BOOL prepared;
@@ -93,9 +101,16 @@ typedef void (^SORIManagerMatchIntervalHandler)(NSTimeInterval interval);
 /// Default value is YES.
 @property(nonatomic, assign) BOOL useCutoffFilter;
 
-/// If YES, SORI will send user's current location when requesting API Server.
-/// This will work when detect type is Cloud.
+/// If YES, SORI will send user's current location with server requests.
 @property(nonatomic, assign) BOOL useLocationService;
+
+/// If YES, local recognition also runs near-ultrasonic audiomarker detection.
+/// Default value is NO.
+@property(nonatomic, assign) BOOL audiomarker;
+
+/// Called when the current near-ultrasonic audiomarker changes during local recognition.
+/// This handler can receive nil when marker recognition clears.
+@property(nonatomic, copy, nullable) SORIManagerAudiomarkerChangeHandler audiomarkerChangeHandler;
 
 /// You can assign instance of SORIContinuousHitManager class.
 @property(nonatomic, strong, nullable) SORIContinuousHitManager *hitManager;
@@ -106,7 +121,7 @@ typedef void (^SORIManagerMatchIntervalHandler)(NSTimeInterval interval);
 
 /// This property was deprecated.
 /// If YES, SORIManager will work by old way (V1)
-/// You cannot use legacy mode for local detect type.
+/// You cannot use legacy mode with the default recognition path.
 @property(nonatomic, assign)
     BOOL useLegacy DEPRECATED_MSG_ATTRIBUTE("use apiVersion instead.");
 
@@ -127,11 +142,12 @@ typedef void (^SORIManagerMatchIntervalHandler)(NSTimeInterval interval);
 /// Raw Audio Buffer will provide when you assign this handler. (EXPERIMENTAL)
 @property(nonatomic, strong, nullable) SORIManagerRawBufferHandler rawBufferHandler;
 
-/// Just use to get match interval of each local request. (EXPERIMENTAL)
+/// Just use to get match interval of each recognition request. (EXPERIMENTAL)
 @property(nonatomic, strong, nullable) SORIManagerMatchIntervalHandler matchIntervalHandler;
 
-/// Barrier audio pack bundle path
-@property(nonatomic, strong, nullable) NSString *barrierBundlePath;
+/// Optional explicit model/audio-pack path for compatibility.
+/// Normal integrations should leave this unset and use the framework-bundled model.
+@property(nonatomic, strong, nullable) NSString *baseModelPath;
 
 /// SORI will updates audiopacks after this time, unless nil.
 /// NOTE: Operation time is not guaranteed because it depends on timer interval.
@@ -143,17 +159,25 @@ typedef void (^SORIManagerMatchIntervalHandler)(NSTimeInterval interval);
 /// Not documented
 - (NSURL *_Nonnull)apiURLWithSuffix:(NSString *_Nonnull)suffix;
 
-/// Prepare SORIManager.
-/// This is contains authentication, download audio pack, and etc processes.
+/// Prepare SORIManager for server-managed recognition.
+/// This contains authentication, download audio pack, and related processes.
+/// You usually do not need to call this directly because startWithRepeat:recognitionHandler: prepares automatically.
+/// You cannot call this when useLegacy is YES(true).
+/// Do not use this with prepareWithCustomAudioPackPaths method together.
+- (void)prepare;
+
+/// Prepare SORIManager with an explicit legacy detection type.
+/// This contains authentication, download audio pack, and related processes.
 /// You cannot call this when useLegacy is YES(true).
 /// Do not use this with prepareWithCustomAudioPackPaths method together.
 /// @param type
 ///     SORIManagerDetectType value
 - (void)prepareWithType:(SORIManagerDetectType)type;
 
-/// Prepare SORIManager for local(In-app Recognition).
+/// Prepare SORIManager with explicit audio pack paths.
+/// This is a compatibility path and is not recommended for normal integrations.
 /// You cannot call when useLegacy is YES(true).
-/// Do not use this with prepareWithType method together.
+/// Do not use this with prepare method together.
 /// @param paths
 ///     Array of audio pack file paths
 - (void)prepareWithCustomAudioPackPaths:(NSArray<NSString *> *_Nonnull)paths;
@@ -195,7 +219,7 @@ typedef void (^SORIManagerMatchIntervalHandler)(NSTimeInterval interval);
     recognitionHandler:
         (SORIManagerRecognitionHandler _Nullable)recognitionHandler;
 
-/// Start SORI Manager. Call prepareWithType or prepareWithCustomAudioPackPaths method before call this method.
+/// Start SORI Manager. This prepares server-managed recognition automatically when needed.
 /// @param repeat
 ///     If YES, SORI not stop when detect any media.
 /// @param recognitionHandler
@@ -216,11 +240,11 @@ typedef void (^SORIManagerMatchIntervalHandler)(NSTimeInterval interval);
 /// Please do not call this method if you have any no problem to use SORI.
 - (void)reset;
 
-/// Remove local IDB. (It's not recommend to call this without any knowledge about this.)
+/// Remove the recognizer database. (It's not recommend to call this without any knowledge about this.)
 - (void)clearIDBWithCompletionHandler:
     (SORIManagerClearIDBCompletionHandler _Nullable)completionHandler;
 
-/// logging local informations for detailed logs
+/// logging recognizer information for detailed logs
 - (void)logLocalInformations;
 
 #pragma mark - Permissions
