@@ -45,8 +45,8 @@ struct ContentView: View {
     func startSORI() {
         let recognizer = SORIAudioRecognizer.shared()
         let configuration = SORIAudioRecognizer.Configuration(
-            applicationID: "Your Application ID",
-            secretKey: "Your Secret Key"
+            applicationID: SORICredentials.applicationID,
+            secretKey: SORICredentials.secretKey
         )
         configuration.useLocationService = false
 
