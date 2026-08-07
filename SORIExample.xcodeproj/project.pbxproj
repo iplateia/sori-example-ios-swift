@@ -16,6 +16,7 @@
 		3B78B8412A8C879C00CFB5D7 /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B78B8402A8C879C00CFB5D7 /* Item.swift */; };
 		3B78B8432A8C890400CFB5D7 /* ItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B78B8422A8C890400CFB5D7 /* ItemView.swift */; };
 		3B78B8452A8C918900CFB5D7 /* DetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B78B8442A8C918900CFB5D7 /* DetailView.swift */; };
+		A1B2C3D4E5F6012345678901 /* SORICredentials.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6012345678902 /* SORICredentials.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -42,6 +43,8 @@
 		3B78B8402A8C879C00CFB5D7 /* Item.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Item.swift; sourceTree = "<group>"; };
 		3B78B8422A8C890400CFB5D7 /* ItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemView.swift; sourceTree = "<group>"; };
 		3B78B8442A8C918900CFB5D7 /* DetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailView.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6012345678902 /* SORICredentials.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SORICredentials.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6012345678903 /* SORICredentials.swift.example */ = {isa = PBXFileReference; lastKnownFileType = text; path = SORICredentials.swift.example; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -77,6 +80,8 @@
 			children = (
 				3B78B81E2A8C7C3C00CFB5D7 /* SORI.xcframework */,
 				3B78B8102A8C7BFC00CFB5D7 /* SORIExampleApp.swift */,
+				A1B2C3D4E5F6012345678902 /* SORICredentials.swift */,
+				A1B2C3D4E5F6012345678903 /* SORICredentials.swift.example */,
 				3B78B8122A8C7BFC00CFB5D7 /* ContentView.swift */,
 				3B78B8402A8C879C00CFB5D7 /* Item.swift */,
 				3B78B8422A8C890400CFB5D7 /* ItemView.swift */,
@@ -166,6 +171,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A1B2C3D4E5F6012345678901 /* SORICredentials.swift in Sources */,
 				3B78B8132A8C7BFC00CFB5D7 /* ContentView.swift in Sources */,
 				3B78B8412A8C879C00CFB5D7 /* Item.swift in Sources */,
 				3B78B8112A8C7BFC00CFB5D7 /* SORIExampleApp.swift in Sources */,
