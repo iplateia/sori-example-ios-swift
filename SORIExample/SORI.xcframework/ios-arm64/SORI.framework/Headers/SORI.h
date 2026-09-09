@@ -21,6 +21,7 @@ FOUNDATION_EXPORT NSString * const SORISDKVersion;
 
 
 #import <SORI/SORIManager.h>
+#import <SORI/SORIAudioMarker.h>
 #import <SORI/SORIAudioRecognizer.h>
 //#import <SORI/SORIApplicationRequest.h>
 #import <SORI/SORIItem.h>
