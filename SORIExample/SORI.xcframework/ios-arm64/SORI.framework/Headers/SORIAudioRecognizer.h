@@ -24,9 +24,13 @@ NS_SWIFT_NAME(SORIAudioRecognizer.Configuration)
 /// If YES, local recognition also runs near-ultrasonic audiomarker detection.
 /// Defaults to NO so recognition remains fingerprint-only unless explicitly enabled.
 @property(nonatomic, assign) BOOL audiomarker;
-/// Called when the current near-ultrasonic audiomarker changes during local recognition.
-/// This handler can receive nil when marker recognition clears.
-@property(nonatomic, copy, nullable) SORIManagerAudiomarkerChangeHandler audiomarkerChangeHandler;
+/// Called once per continuous activity segment after SORI Console resolves a marker.
+@property(nonatomic, copy, nullable) SORIManagerAudioMarkerHandler audioMarkerHandler;
+@property(nonatomic, copy, nullable) SORIAudioMarkerStateHandler audioMarkerStateHandler;
+@property(nonatomic, copy, nullable) SORIActivityResultHandler activityResultHandler;
+/// Legacy callback receiving only the Console-resolved marker name.
+@property(nonatomic, copy, nullable) SORIManagerAudiomarkerChangeHandler audiomarkerChangeHandler
+    DEPRECATED_MSG_ATTRIBUTE("Use audioMarkerHandler for the Console-resolved identifier and name.");
 @property(nonatomic, strong, nullable) SORIContinuousHitManager *hitManager;
 @property(nonatomic, assign) BOOL debugMode;
 @property(nonatomic, assign) BOOL showNetworkActivityIndicator;
@@ -62,9 +66,15 @@ NS_SWIFT_NAME(SORIAudioRecognizer.Configuration)
 /// If YES, local recognition also runs near-ultrasonic audiomarker detection.
 /// Defaults to NO so recognition remains fingerprint-only unless explicitly enabled.
 @property(nonatomic, assign) BOOL audiomarker;
-/// Called when the current near-ultrasonic audiomarker changes during local recognition.
-/// This handler can receive nil when marker recognition clears.
-@property(nonatomic, copy, nullable) SORIManagerAudiomarkerChangeHandler audiomarkerChangeHandler;
+/// Current SDK snapshot; never renews microphone evidence.
+@property(nonatomic, readonly) SORIAudioMarkerSnapshot *currentAudioMarkerState;
+/// Called once per continuous activity segment after SORI Console resolves a marker.
+@property(nonatomic, copy, nullable) SORIManagerAudioMarkerHandler audioMarkerHandler;
+@property(nonatomic, copy, nullable) SORIAudioMarkerStateHandler audioMarkerStateHandler;
+@property(nonatomic, copy, nullable) SORIActivityResultHandler activityResultHandler;
+/// Legacy callback receiving only the Console-resolved marker name.
+@property(nonatomic, copy, nullable) SORIManagerAudiomarkerChangeHandler audiomarkerChangeHandler
+    DEPRECATED_MSG_ATTRIBUTE("Use audioMarkerHandler for the Console-resolved identifier and name.");
 @property(nonatomic, strong, nullable) SORIContinuousHitManager *hitManager;
 @property(nonatomic, assign) BOOL debugMode;
 @property(nonatomic, assign) BOOL showNetworkActivityIndicator;

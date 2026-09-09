@@ -5,6 +5,7 @@
  */
 
 #import <Foundation/Foundation.h>
+#import <SORI/SORIAudioMarker.h>
 
 /// SORI Manager Detection Type
 typedef NS_ENUM(int, SORIManagerDetectType) {
@@ -52,7 +53,9 @@ typedef void (^SORIManagerAudioPackLoadCompletionHandler)(BOOL succeed);
 typedef void (^SORIManagerRawBufferHandler)(void *_Nonnull buffer, size_t size);
 typedef void (^SORIManagerClearIDBCompletionHandler)(BOOL succeed);
 typedef void (^SORIManagerMatchIntervalHandler)(NSTimeInterval interval);
-typedef void (^SORIManagerAudiomarkerChangeHandler)(NSString *_Nullable marker);
+typedef void (^SORIManagerAudioMarkerHandler)(SORIAudioMarker *_Nonnull audioMarker);
+typedef void (^SORIManagerAudiomarkerChangeHandler)(NSString *_Nullable marker)
+    DEPRECATED_MSG_ATTRIBUTE("Use SORIManagerAudioMarkerHandler. The legacy callback now receives only the Console-resolved marker name.");
 
 @class SORIApplicationRequest;
 @class SORIContinuousHitManager;
@@ -108,9 +111,23 @@ typedef void (^SORIManagerAudiomarkerChangeHandler)(NSString *_Nullable marker);
 /// Default value is NO.
 @property(nonatomic, assign) BOOL audiomarker;
 
-/// Called when the current near-ultrasonic audiomarker changes during local recognition.
-/// This handler can receive nil when marker recognition clears.
-@property(nonatomic, copy, nullable) SORIManagerAudiomarkerChangeHandler audiomarkerChangeHandler;
+/// Called once per continuous activity segment after SORI Console resolves a marker.
+/// Local codebook labels are never delivered. No callback occurs unless the
+/// activity response contains both a non-empty marker identifier and name.
+@property(nonatomic, copy, nullable) SORIManagerAudioMarkerHandler audioMarkerHandler;
+
+/// Current SDK-owned state; reads synchronously enforce expiry.
+@property(nonatomic, readonly, nonnull) SORIAudioMarkerSnapshot *currentAudioMarkerState;
+/// Main-queue delivery, including the current snapshot on attachment. Set nil to detach.
+@property(nonatomic, copy, nullable) SORIAudioMarkerStateHandler audioMarkerStateHandler;
+/// Exact server activity results, including independent late marker upgrades.
+@property(nonatomic, copy, nullable) SORIActivityResultHandler activityResultHandler;
+
+/// Legacy string callback retained for source and binary compatibility.
+/// When set, it receives the Console-resolved marker name at the same time as
+/// `audioMarkerHandler`. It never receives a local codebook label or nil clear.
+@property(nonatomic, copy, nullable) SORIManagerAudiomarkerChangeHandler audiomarkerChangeHandler
+    DEPRECATED_MSG_ATTRIBUTE("Use audioMarkerHandler for the Console-resolved identifier and name.");
 
 /// You can assign instance of SORIContinuousHitManager class.
 @property(nonatomic, strong, nullable) SORIContinuousHitManager *hitManager;
