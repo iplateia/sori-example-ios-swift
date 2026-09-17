@@ -17,7 +17,8 @@ typedef NS_ENUM(int, SORIContinuousHitPolicy) {
 
 NS_ASSUME_NONNULL_BEGIN
 
-/// This class is used to define rules when recognizing same audio materials continuously.
+/// In-memory compatibility policy for reserved/live detection and direct callers.
+/// Local material recognition uses SORILogStore's bounded ordered runs instead.
 @interface SORIContinuousHitManager : NSObject
 
 @property (nonatomic, assign) SORIContinuousHitPolicy policy;
