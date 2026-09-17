@@ -31,6 +31,7 @@ NS_SWIFT_NAME(SORIAudioRecognizer.Configuration)
 /// Legacy callback receiving only the Console-resolved marker name.
 @property(nonatomic, copy, nullable) SORIManagerAudiomarkerChangeHandler audiomarkerChangeHandler
     DEPRECATED_MSG_ATTRIBUTE("Use audioMarkerHandler for the Console-resolved identifier and name.");
+/// Reserved/live compatibility policy; local material runs do not consult it.
 @property(nonatomic, strong, nullable) SORIContinuousHitManager *hitManager;
 @property(nonatomic, assign) BOOL debugMode;
 @property(nonatomic, assign) BOOL showNetworkActivityIndicator;
@@ -59,6 +60,8 @@ NS_SWIFT_NAME(SORIAudioRecognizer.Configuration)
     DEPRECATED_MSG_ATTRIBUTE("Campaign response payloads are the default. Avoid configuring resultType in new code.");
 @property(nonatomic, readonly) BOOL prepared;
 @property(nonatomic, readonly) BOOL running;
+/// Current pending/active recognition ownership; nil after cleanup.
+@property(atomic, copy, readonly, nullable) NSString *recognitionSessionID;
 @property(nonatomic, readonly) BOOL isRecorderRunning;
 @property(nonatomic, assign) double cutoff;
 @property(nonatomic, assign) BOOL useCutoffFilter;
@@ -75,6 +78,7 @@ NS_SWIFT_NAME(SORIAudioRecognizer.Configuration)
 /// Legacy callback receiving only the Console-resolved marker name.
 @property(nonatomic, copy, nullable) SORIManagerAudiomarkerChangeHandler audiomarkerChangeHandler
     DEPRECATED_MSG_ATTRIBUTE("Use audioMarkerHandler for the Console-resolved identifier and name.");
+/// Reserved/live compatibility policy; local material runs do not consult it.
 @property(nonatomic, strong, nullable) SORIContinuousHitManager *hitManager;
 @property(nonatomic, assign) BOOL debugMode;
 @property(nonatomic, assign) BOOL showNetworkActivityIndicator;
@@ -99,6 +103,13 @@ NS_SWIFT_NAME(SORIAudioRecognizer.Configuration)
 - (void)startRecognitionWithRepeat:(BOOL)repeat
                            handler:(SORIManagerRecognitionHandler _Nullable)handler
     NS_SWIFT_NAME(startRecognition(repeat:handler:));
+/// Returns the accepted recognition ID. Duplicate starts retain the first call.
+/// Callbacks run asynchronously on main. Only stopped is terminal; its error is
+/// nil for intentional stop. Compare IDs when handling queued older outcomes.
+- (NSString *)startRecognitionWithRepeat:(BOOL)repeat
+                                handler:(SORIManagerRecognitionHandler _Nullable)handler
+                       lifecycleHandler:(SORIRecognitionLifecycleHandler _Nullable)lifecycleHandler
+    NS_SWIFT_NAME(startRecognition(repeat:handler:lifecycleHandler:));
 - (void)stopRecognition NS_SWIFT_NAME(stopRecognition());
 - (void)clearState;
 - (void)reset;

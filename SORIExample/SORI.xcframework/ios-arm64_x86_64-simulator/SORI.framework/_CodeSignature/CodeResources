@@ -14,15 +14,15 @@
 		</data>
 		<key>Headers/SORIAudioRecognizer.h</key>
 		<data>
-		LTsrjqWl+YuKPZtvzkcuMge3e4U=
+		o9xGJGnPbVwfi1Bg4oLFAVScQ5E=
 		</data>
 		<key>Headers/SORIContinuousHitManager.h</key>
 		<data>
-		9EibP369iSLwNbf7+2SmF56h1jw=
+		DgDtAZx0rpGinR6N2UOBk6p/4hw=
 		</data>
 		<key>Headers/SORIError.h</key>
 		<data>
-		mzZjW00F1yJHotSIt7jRLBnVzMI=
+		0WtV4i1P2UfqhWciZBdXvBey97M=
 		</data>
 		<key>Headers/SORIItem.h</key>
 		<data>
@@ -30,7 +30,7 @@
 		</data>
 		<key>Headers/SORIManager.h</key>
 		<data>
-		AzvTSg1/V4DZh4h82btf7GMxMjI=
+		dL6QTIi//xVbw+cmd4SmNJi0qLk=
 		</data>
 		<key>Headers/SORINotification.h</key>
 		<data>
@@ -42,7 +42,7 @@
 		</data>
 		<key>Info.plist</key>
 		<data>
-		cjZ0RVn4fcU6wrIkf7+gVMSU7X0=
+		U4V1yfq3q79He8rky4jINUfRD3k=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
@@ -73,21 +73,21 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			rJge78bguF1ZBVub5IZ+7/p3nbAtcsaTcVIKBuLAFfU=
+			4a4bHYwX18G3Cl3y04sS/57HVIqvENJuF9aJipFy5s8=
 			</data>
 		</dict>
 		<key>Headers/SORIContinuousHitManager.h</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			Uu0bssrLxZPYlftJ8RE6ZvsTtZWJjhfrto8MSJ4EulA=
+			g49SsOkEdpewR7iHil00RmOpiXFz3UI4QeeabKkwaY4=
 			</data>
 		</dict>
 		<key>Headers/SORIError.h</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			rvC+yjBVmYWccVYAcZEEucUcsP2tj3DtMbkCoHN+ERc=
+			qTtyI40rBH1Bdisp+H6gNErR9sUzLfmtOrfzqGcXeHY=
 			</data>
 		</dict>
 		<key>Headers/SORIItem.h</key>
@@ -101,7 +101,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			WueT0OKc44OaFWq5F/ctAzxJmjHTsjuzw21jzqw5yFU=
+			wCluwudSID6locVBM7LJH2BVdw/mLZFgGUU5eLiyiFg=
 			</data>
 		</dict>
 		<key>Headers/SORINotification.h</key>

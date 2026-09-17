@@ -47,9 +47,25 @@ typedef void (^SORIManagerCloudResponseHandler)(NSData *_Nullable data,
                                                 NSError *_Nullable error);
 typedef void (^SORIManagerRecognitionHandler)(NSDictionary *_Nullable media,
                                               NSError *_Nullable error);
+
+/// Recognition ownership, independent of the authentication/sessionID property.
+typedef NS_ENUM(NSInteger, SORIRecognitionLifecycleState) {
+    SORIRecognitionLifecycleStateStarting = 0,
+    SORIRecognitionLifecycleStateRunning = 1,
+    SORIRecognitionLifecycleStateRecovering = 2,
+    SORIRecognitionLifecycleStateStopped = 3
+};
+typedef void (^SORIRecognitionLifecycleHandler)(NSString *_Nonnull recognitionSessionID,
+                                               SORIRecognitionLifecycleState state,
+                                               NSError *_Nullable error);
+/// Main-queue notification: recognitionSessionID (NSString), state (starting,
+/// running, recovering, stopped), and error (NSError, only for stopped failure).
+/// Starting is synchronous during start acceptance. Stopped follows cleanup.
+FOUNDATION_EXPORT NSNotificationName _Nonnull const SORIRecognitionLifecycleNotification;
 typedef void (^SORIManagerDetectMediaHandler)(NSDictionary *_Nullable media)
     __deprecated;
 typedef void (^SORIManagerAudioPackLoadCompletionHandler)(BOOL succeed);
+/// Copied raw PCM arrives on main; the pointer remains valid during the callback.
 typedef void (^SORIManagerRawBufferHandler)(void *_Nonnull buffer, size_t size);
 typedef void (^SORIManagerClearIDBCompletionHandler)(BOOL succeed);
 typedef void (^SORIManagerMatchIntervalHandler)(NSTimeInterval interval);
@@ -85,6 +101,9 @@ typedef void (^SORIManagerAudiomarkerChangeHandler)(NSString *_Nullable marker)
 
 /// If YES, the SORI running.
 @property(nonatomic, readonly) BOOL running;
+
+/// Current pending/active recognition ID; nil after stop or terminal failure.
+@property(atomic, copy, readonly, nullable) NSString *recognitionSessionID;
 
 /// If YES, the Audio Recorder is running.
 /// This is independent and get value from recorder service directly,
@@ -129,7 +148,8 @@ typedef void (^SORIManagerAudiomarkerChangeHandler)(NSString *_Nullable marker)
 @property(nonatomic, copy, nullable) SORIManagerAudiomarkerChangeHandler audiomarkerChangeHandler
     DEPRECATED_MSG_ATTRIBUTE("Use audioMarkerHandler for the Console-resolved identifier and name.");
 
-/// You can assign instance of SORIContinuousHitManager class.
+/// Compatibility policy for reserved/live detection only. Local fingerprint and
+/// marker recognition use ordered activity runs, independent of this helper.
 @property(nonatomic, strong, nullable) SORIContinuousHitManager *hitManager;
 
 /// If YES, logging SORI internal logs.
@@ -244,6 +264,13 @@ typedef void (^SORIManagerAudiomarkerChangeHandler)(NSString *_Nullable marker)
 - (void)startWithRepeat:(BOOL)repeat
      recognitionHandler:
          (SORIManagerRecognitionHandler _Nullable)recognitionHandler;
+
+/// Claims and returns recognition ownership synchronously on the main queue.
+/// Repeated pending/active starts retain the first arguments/handlers and ID.
+/// Lifecycle callbacks are queued on main and retain the originating ID/handler.
+- (NSString *_Nonnull)startWithRepeat:(BOOL)repeat
+                  recognitionHandler:(SORIManagerRecognitionHandler _Nullable)recognitionHandler
+                    lifecycleHandler:(SORIRecognitionLifecycleHandler _Nullable)lifecycleHandler;
 
 /// Stop SORI Manager
 - (void)stop;

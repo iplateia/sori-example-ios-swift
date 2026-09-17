@@ -3,6 +3,13 @@
 This is a sample source code of how to implement SORI SDK in your project in Swift with SwiftUI.
 You can use this example to build your own audio recognition service from scratch.
 
+## SDK dependency
+
+This example vendors SORI iOS SDK 5.1.0 from the public
+[`SORI-5.1.0.xcframework.zip`](https://maven.iplateia.com/ios/sorisdk/v5.1.0/SORI-5.1.0.xcframework.zip)
+archive. Its SHA-256 checksum is
+`948c4209572392e796133eb940e90224dfd030294a79b8246978c4fd0ec3929d`.
+
 ## How to build
 
 1. Request your App ID and Secret Key from the [SORI Console](https://console.soriapi.com/account/application/).
