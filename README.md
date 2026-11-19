@@ -5,10 +5,10 @@ You can use this example to build your own audio recognition service from scratc
 
 ## SDK dependency
 
-This example vendors SORI iOS SDK 5.2.0 from the public
-[`SORI-5.2.0.xcframework.zip`](https://maven.iplateia.com/ios/sorisdk/v5.2.0/SORI-5.2.0.xcframework.zip)
+This example vendors SORI iOS SDK 5.2.1 from the public
+[`SORI-5.2.1.xcframework.zip`](https://maven.iplateia.com/ios/sorisdk/v5.2.1/SORI-5.2.1.xcframework.zip)
 archive. Its SHA-256 checksum is
-`495c65dcfbc8f3e64ebb560d73f1a90b612e97c67d483e943f9d74726aeb50e2`.
+`cfa3c34af29ad0455251983a771e4b302c355943da6d8ac6c7ef59ea927b6355`.
 
 ## How to build
 
