@@ -5,6 +5,7 @@
  */
 
 #import <Foundation/Foundation.h>
+#import <SORI/SORIChannel.h>
 #import <SORI/SORIAudioMarker.h>
 
 /// SORI Manager Detection Type
@@ -70,8 +71,58 @@ typedef void (^SORIManagerRawBufferHandler)(void *_Nonnull buffer, size_t size);
 typedef void (^SORIManagerClearIDBCompletionHandler)(BOOL succeed);
 typedef void (^SORIManagerMatchIntervalHandler)(NSTimeInterval interval);
 typedef void (^SORIManagerAudioMarkerHandler)(SORIAudioMarker *_Nonnull audioMarker);
+/// Returns caller metadata (string keys and values) for server recognition. See `metadataProvider`.
+typedef NSDictionary<NSString *, NSString *> *_Nullable (^SORIRecognitionMetadataProvider)(void);
 typedef void (^SORIManagerAudiomarkerChangeHandler)(NSString *_Nullable marker)
     DEPRECATED_MSG_ATTRIBUTE("Use SORIManagerAudioMarkerHandler. The legacy callback now receives only the Console-resolved marker name.");
+
+/// How recognition uses SORI Console. Select it with `-[SORIManager setRecognitionMode:serverRecognition:error:]`
+/// or `SORIAudioRecognizerConfiguration.recognitionMode`.
+typedef NS_ENUM(NSInteger, SORIRecognitionMode) {
+    /// Default. Recognition runs on the device only, as in 5.1.2: no server query, no channel state.
+    /// Server recognition options must be nil.
+    SORIRecognitionModeOnDevice = 0,
+    /// Server recognition: no on-device material matcher; every query goes to the joint Console v1
+    /// recognition/recording operation (`POST /api/v1/recognize`). Server recognition options are optional
+    /// (nil means the defaults: continuous queries, no burst, 750 ms delay).
+    SORIRecognitionModeServer = 1,
+    /// On-device recognition matches every capture window at its normal cadence; in addition one window per
+    /// `intervalMillis` (or every window during each burst) is also sent to the server. Server recognition
+    /// options with a positive `intervalMillis` are required.
+    SORIRecognitionModeOnDeviceWithPeriodicServer = 2,
+};
+
+/// Server recognition tuning: query cadence and delay. An immutable value object; equal values compare equal.
+///
+/// Every server query is one 52-hop (3.25 s) `afp-v1` window anchored on the capture sample clock.
+/// Validation, applied together with the recognition mode (the same rules on every SORI SDK):
+/// - `intervalMillis`: 0 sends every capture window (continuous, server mode only); a positive value sends one
+///   window per period and must be at least 3250 (and at most 9223372036854, so no time arithmetic
+///   overflows). On-device recognition with periodic server recognition
+///   requires a positive value.
+/// - `burstMillis`: 0 sends one window per period; otherwise every window is sent during the first `burstMillis`
+///   of each period, with 3250 <= `burstMillis` < `intervalMillis`. The microphone stays on between bursts.
+/// - `delayMillis`: 0 to 60000. The queried window ends `delayMillis` before the newest captured audio
+///   (default 750; the extractor's 625 ms lookahead counts towards it).
+@interface SORIServerRecognitionOptions : NSObject <NSCopying>
+/// Server query period in milliseconds; 0 is continuous. Default 0.
+@property(nonatomic, readonly) NSInteger intervalMillis;
+/// Burst at the start of each period in milliseconds; 0 is one window per period. Default 0.
+@property(nonatomic, readonly) NSInteger burstMillis;
+/// Age of the queried window's end relative to the newest captured audio, in milliseconds. Default 750.
+@property(nonatomic, readonly) NSInteger delayMillis;
+/// Defaults: interval 0, burst 0, delay 750.
+- (nonnull instancetype)init;
+/// Burst 0 and delay 750.
+- (nonnull instancetype)initWithIntervalMillis:(NSInteger)intervalMillis NS_SWIFT_NAME(init(intervalMillis:));
+/// Delay 750.
+- (nonnull instancetype)initWithIntervalMillis:(NSInteger)intervalMillis burstMillis:(NSInteger)burstMillis
+    NS_SWIFT_NAME(init(intervalMillis:burstMillis:));
+/// Stores the values as given; they are validated with the recognition mode when the configuration is applied.
+- (nonnull instancetype)initWithIntervalMillis:(NSInteger)intervalMillis burstMillis:(NSInteger)burstMillis
+                                   delayMillis:(NSInteger)delayMillis
+    NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(intervalMillis:burstMillis:delayMillis:));
+@end
 
 @class SORIApplicationRequest;
 @class SORIContinuousHitManager;
@@ -125,11 +176,32 @@ typedef void (^SORIManagerAudiomarkerChangeHandler)(NSString *_Nullable marker)
 
 /// If YES, SORI will send user's current location with server requests.
 @property(nonatomic, assign) BOOL useLocationService;
+/// Caller metadata for server recognition queries (either server recognition mode), for example your own user or session
+/// identifiers. SORI Console returns the map as `metadata` in `live.recognition` and `live.segment`
+/// webhooks. Called on the main thread; return quickly. nil or an empty map sends nothing.
+/// It is evaluated once per `/v1/recognize` query, when the query window is frozen (captured), and that snapshot
+/// is sent unchanged however long the query waits for the delay hold or a busy transport, so a webhook sees the
+/// state in effect when the audio was captured. Setting a new provider applies to the next frozen window without
+/// a restart. Before sending, the SDK drops
+/// non-string, blank and reserved keys (`channel`, `channel_id`, `channel_material_id`,
+/// `channel_mapping_revision`, `channel_resolution`, `live_score`, `live_position_ms`, `program`) and keys
+/// longer than 64 Unicode scalars, truncates values to 512 Unicode scalars and keeps the first 32 keys in
+/// sorted order. The legacy `/activity/` request never carries it.
+@property(atomic, copy, nullable) SORIRecognitionMetadataProvider metadataProvider;
 
 /// If YES, local recognition also runs near-ultrasonic audiomarker detection.
 /// Default value is NO.
 @property(nonatomic, assign) BOOL audiomarker;
-
+/// The configured recognition mode. Default SORIRecognitionModeOnDevice. Set it with
+/// `setRecognitionMode:serverRecognition:error:`.
+/// While recognition runs this is the configuration the next `startWithRepeat:...` call applies, which may differ
+/// from the one the running session uses.
+@property(nonatomic, readonly) SORIRecognitionMode recognitionMode;
+/// The configured server recognition options; nil in on-device mode, and nil (the defaults) in server mode when
+/// none were given. Set them with `setRecognitionMode:serverRecognition:error:`.
+@property(nonatomic, copy, readonly, nullable) SORIServerRecognitionOptions *serverRecognition;
+@property(nonatomic, copy, nullable) SORIChannelStateHandler channelStateHandler;
+@property(nonatomic, readonly, nonnull) SORIChannelSnapshot *currentChannelState;
 /// Called once per continuous activity segment after SORI Console resolves a marker.
 /// Local codebook labels are never delivered. No callback occurs unless the
 /// activity response contains both a non-empty marker identifier and name.
@@ -266,7 +338,8 @@ typedef void (^SORIManagerAudiomarkerChangeHandler)(NSString *_Nullable marker)
          (SORIManagerRecognitionHandler _Nullable)recognitionHandler;
 
 /// Claims and returns recognition ownership synchronously on the main queue.
-/// Repeated pending/active starts retain the first arguments/handlers and ID.
+/// Repeated pending/active starts retain the first arguments/handlers and ID; such a start is also the point where
+/// a server recognition tuning change is applied to the session (see `setRecognitionMode:serverRecognition:error:`).
 /// Lifecycle callbacks are queued on main and retain the originating ID/handler.
 - (NSString *_Nonnull)startWithRepeat:(BOOL)repeat
                   recognitionHandler:(SORIManagerRecognitionHandler _Nullable)recognitionHandler
@@ -274,6 +347,34 @@ typedef void (^SORIManagerAudiomarkerChangeHandler)(NSString *_Nullable marker)
 
 /// Stop SORI Manager
 - (void)stop;
+
+/// Configures the recognition mode and its server recognition options. The three minimal configurations:
+///
+///     [manager setRecognitionMode:SORIRecognitionModeOnDevice serverRecognition:nil error:&error];   // default
+///     [manager setRecognitionMode:SORIRecognitionModeServer serverRecognition:nil error:&error];     // continuous
+///     [manager setRecognitionMode:SORIRecognitionModeOnDeviceWithPeriodicServer
+///               serverRecognition:[[SORIServerRecognitionOptions alloc] initWithIntervalMillis:300000]
+///                           error:&error];
+///
+/// Returns NO with SORIErrorCodeInvalidConfiguration, changing nothing, when the pair is invalid: options with the
+/// on-device mode, on-device with periodic server recognition without a positive interval, a positive interval
+/// below 3250, a burst outside `3250 <= burst < interval`, a delay outside 0...60000, or either server mode while
+/// `audiomarker` is YES. See `SORIServerRecognitionOptions`.
+///
+/// The configuration is applied by the next `startWithRepeat:...` call, never immediately: a running session keeps
+/// the configuration it was started with and is never stopped by this call. When a session is already running (or
+/// starting), the next `startWithRepeat:...` call keeps returning the same recognition ID and:
+/// - with only a different interval, burst or delay, applies them to the running session in place, from the next
+///   captured window, without restarting the recorder, capture, the audio session or the on-device matcher; the
+///   server query already in flight is kept;
+/// - with a different recognition mode, changes nothing; the new configuration is used by the first start after
+///   the session stops;
+/// - with no change, does nothing.
+/// Callable from any thread; applied on the main thread.
+- (BOOL)setRecognitionMode:(SORIRecognitionMode)recognitionMode
+         serverRecognition:(nullable SORIServerRecognitionOptions *)serverRecognition
+                     error:(NSError *_Nullable *_Nullable)error
+    NS_SWIFT_NAME(setRecognitionMode(_:serverRecognition:));
 
 /// Clear last recognition media ID.
 /// This allows SORI to detect previous detected media again.

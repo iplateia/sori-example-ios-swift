@@ -20,6 +20,7 @@ FOUNDATION_EXPORT NSString * const SORISDKVersion;
 // In this header, you should import all the public headers of your framework using statements like #import <SORI/PublicHeader.h>
 
 
+#import <SORI/SORIChannel.h>
 #import <SORI/SORIManager.h>
 #import <SORI/SORIAudioMarker.h>
 #import <SORI/SORIAudioRecognizer.h>
