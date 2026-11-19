@@ -9,7 +9,8 @@ import SwiftUI
 import SORI
 
 struct ContentView: View {
-    @State private var buttonTitle = "Start"
+    /// The recognition session this view started, until the SDK reports it stopped.
+    @State private var activeSessionID: String?
     @State private var items = [Item]()
     
     var body: some View {
@@ -29,13 +30,11 @@ struct ContentView: View {
                     SORIAudioRecognizer.shared().clearState()
                     items.removeAll()
                 }
-                Button(buttonTitle) {
-                    if SORIAudioRecognizer.shared().running {
-                        stopSORI()
-                        buttonTitle = "Start"
-                    } else {
+                Button(activeSessionID == nil ? "Start" : "Stop") {
+                    if activeSessionID == nil {
                         startSORI()
-                        buttonTitle = "Stop"
+                    } else {
+                        stopSORI()
                     }
                 }
             }
@@ -51,12 +50,26 @@ struct ContentView: View {
         configuration.useLocationService = false
 
         recognizer.configure(configuration)
-        recognizer.startRecognition(repeat: true, handler: {
+        activeSessionID = recognizer.startRecognition(repeat: true, handler: {
             (media, error) in
             if let error = error {
                 print("Error: \(error.localizedDescription)")
             } else {
                 self.onRecognized(mediaJSON: media as? [String : Any] ?? [:])
+            }
+        }, lifecycleHandler: { sessionID, state, error in
+            // The SDK can end a session on its own: a failed start, a denied
+            // microphone permission, or a start that was still pending when the
+            // app moved to the background. Follow its report so the button
+            // always matches the real state.
+            guard state == .stopped else { return }
+            if let error = error {
+                print("Recognition stopped: \(error.localizedDescription)")
+            }
+            DispatchQueue.main.async {
+                if self.activeSessionID == sessionID {
+                    self.activeSessionID = nil
+                }
             }
         })
     }
