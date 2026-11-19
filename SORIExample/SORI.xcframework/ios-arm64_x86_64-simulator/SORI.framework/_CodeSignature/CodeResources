@@ -6,7 +6,7 @@
 	<dict>
 		<key>Headers/SORI.h</key>
 		<data>
-		ipeVCBg1SkOlKIdsV5zGIacYpSg=
+		aLIxzehIzO5daUMZ0vrz7WoidA8=
 		</data>
 		<key>Headers/SORIAudioMarker.h</key>
 		<data>
@@ -14,7 +14,11 @@
 		</data>
 		<key>Headers/SORIAudioRecognizer.h</key>
 		<data>
-		o9xGJGnPbVwfi1Bg4oLFAVScQ5E=
+		yQ+IQ4ARJ6wW6o23nTIlyxcLYJ4=
+		</data>
+		<key>Headers/SORIChannel.h</key>
+		<data>
+		ZvCrLY1YpBNBiaQ1Ydv5T9DOyTo=
 		</data>
 		<key>Headers/SORIContinuousHitManager.h</key>
 		<data>
@@ -22,7 +26,7 @@
 		</data>
 		<key>Headers/SORIError.h</key>
 		<data>
-		0WtV4i1P2UfqhWciZBdXvBey97M=
+		2zHiavz+TjjpiGTqnXurdo+o4Uo=
 		</data>
 		<key>Headers/SORIItem.h</key>
 		<data>
@@ -30,7 +34,7 @@
 		</data>
 		<key>Headers/SORIManager.h</key>
 		<data>
-		dL6QTIi//xVbw+cmd4SmNJi0qLk=
+		JyOFwcZ8RxPnbHKZCcV174yLA6Q=
 		</data>
 		<key>Headers/SORINotification.h</key>
 		<data>
@@ -42,7 +46,7 @@
 		</data>
 		<key>Info.plist</key>
 		<data>
-		U4V1yfq3q79He8rky4jINUfRD3k=
+		oXnnD0PrEFQdLUMfw5EgMrov3rE=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
@@ -59,7 +63,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			wV5Q1eWE8qgGctLnRE0us/O4EqVRXpVI2nUfRfidzHA=
+			LJDIBbMc2mXx6RcjsBFtrHy0WONOXKXAtQ/W2LJmo8s=
 			</data>
 		</dict>
 		<key>Headers/SORIAudioMarker.h</key>
@@ -73,7 +77,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			4a4bHYwX18G3Cl3y04sS/57HVIqvENJuF9aJipFy5s8=
+			mZ9Z11aMEAupx7pvL2jV/Y0IdKCyOO1WwvNpL7n6mRA=
+			</data>
+		</dict>
+		<key>Headers/SORIChannel.h</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			OxC3yeAFaVBVnDmDZl+bzvcOEkGf5Ok9xOCTmfxqblA=
 			</data>
 		</dict>
 		<key>Headers/SORIContinuousHitManager.h</key>
@@ -87,7 +98,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			qTtyI40rBH1Bdisp+H6gNErR9sUzLfmtOrfzqGcXeHY=
+			lvy7shIDNcGuEM/JQJygN13xQ/0DKLCGe2rIyOFlyq4=
 			</data>
 		</dict>
 		<key>Headers/SORIItem.h</key>
@@ -101,7 +112,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			wCluwudSID6locVBM7LJH2BVdw/mLZFgGUU5eLiyiFg=
+			BPz/HAWopf6tXCnkYi/9ApiufL414O8CaGSirN6UjzE=
 			</data>
 		</dict>
 		<key>Headers/SORINotification.h</key>
